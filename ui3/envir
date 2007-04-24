@@ -1,0 +1,1 @@
+LDFLAGS="/home/vlk/bin/lib"; export LDFLAGS; CPPFLAGS="/home/vlk/bin/include"; export CPPFLAGS;
