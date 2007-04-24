@@ -13,8 +13,10 @@ int main()
 {	
 	FILE *f_in;
 	char buffer[MAX_LINE_LENGTH], *d_start, *d_end, *endp;
-	double *pole_start, *pole_end;
-	int pocet_dier, line, i;
+	double *pole_start, *pole_end, zakryte;
+	int pocet_dier, line, i, d, pocet_kobercov;
+
+	d = 10; //dlzka koberca
 
 	//otvorenie suboru
 	if((f_in=fopen(INPUT_FILE,"r"))==NULL) {
@@ -64,12 +66,28 @@ int main()
 	//triedenie poli - triedi sa podla pole_start - obdobne sa vsak presuva aj v pole_end
 	mergesort(pole_start, pocet_dier, pole_end);
 	//vypis utriedenych dat
-	printf("Pole pio triedenim\n");
+	printf("Pole po triedenim\n");
 	for(i=0;i<pocet_dier;i++) {
 		printf("Start diera %g end diera %g\n",*(pole_start+i),*(pole_end+i));
 	}
-	
-
+	//vlastny algoritmus hladania najmensieho poctu kobercekov 
+	zakryte = *(pole_start+0);					//po prvu dieru nemusim nic riesit
+	i = 0;										//citac spracovanych dier
+	pocet_kobercov = 0;							//citac poctu kobercov
+	while(zakryte<=*(pole_end+pocet_dier-1)) {	//pokial nezakryjem koniec poslednej diery, abo podmienka na pocet dier
+		//ak som ciastocne zakryl dieru, nastavim jej zaciatok na koniec zakrytia
+		if(*(pole_start+i)<zakryte) *(pole_start+i) = zakryte;			
+		if(*(pole_end+i)<zakryte) { 			//zakryl som aj celu nasledujucu dieru predtym, nemam co robit idem next
+			i++;
+			continue;
+		}
+		do {									//zakryvam, kym nie je zakryta cela diera
+			zakryte += 1;
+			pocet_kobercov++;
+			printf("%d. koberec na %g az %g\n",pocet_kobercov,zakryte-1,zakryte);
+		} while(zakryte<=*(pole_end+i));
+		i++;
+	} //end whille
 	free((void *) pole_start);
 	free((void *) pole_end);
 	fclose(f_in);
