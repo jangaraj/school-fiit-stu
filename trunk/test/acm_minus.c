@@ -6,29 +6,30 @@
 
 int main(void) 
 {
-	char vstup[MAX_LINE_LENGTH], *out;
-	int i;
+	char vstup[MAX_LINE_LENGTH];
+//	char *out;
+//	int i;
 
-	i = 1;
-    if((out = (char *) malloc(sizeof(char)))==NULL) {
+//	i = 1;
+    /*if((out = (char *) malloc(sizeof(char)))==NULL) {
          fprintf(stderr,"Error, malloc pole_start\n");
          exit (1);
-    }
-	*out = '\0';
+    }*/
+//	*out = '\0';
 	while(fgets(vstup,MAX_LINE_LENGTH,stdin)!=NULL) {
-		out = (char *) realloc(out,i+1 * sizeof(char));
-		i++;
-		if(vstup[0]=='-') {
-			strcat(out,vstup+sizeof(char));
-			strcat(out,"\n");
-			//printf("%s\n",(vstup+sizeof(char)));
+//		out = (char *) realloc(out,i+1 * sizeof(char));
+//		i++;
+		if(vstup[0]!='-') {
+//			strcat(out,vstup+sizeof(char));
+//			strcat(out,"\n");
+			printf("-%d\n",atol(vstup));
 		}
 		else {
-			strcat(out,vstup);
-			strcat(out,"\n");
-//			printf("%s\n",vstup);
+//			strcat(out,vstup);
+//			strcat(out,"\n");
+			printf("%d\n",atol(vstup));
 		}
 	}
-	printf("%s",out);
+//	printf("%s",out);
 	return 0;
 }
