@@ -22,12 +22,12 @@ int main(void)
 		if(vstup[0]!='-') {
 //			strcat(out,vstup+sizeof(char));
 //			strcat(out,"\n");
-			printf("-%d\n",atol(vstup));
+			printf("-%lld\n",atoll(vstup+sizeof(char)));
 		}
 		else {
 //			strcat(out,vstup);
 //			strcat(out,"\n");
-			printf("%d\n",atol(vstup));
+			printf("%lld\n",atoll(vstup));
 		}
 	}
 //	printf("%s",out);
