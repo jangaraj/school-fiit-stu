@@ -1,3 +1,9 @@
+/* Jan Garaj
+ * odovodnenie preco je to najlepsie riesenie 
+ * teap zadanie cislo 3 - z1535
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,21 +65,22 @@ int main()
 		}
 	}
 	//vypis nacitanych dat
-	printf("Pole pred triedenim\n");
+	printf("--------------\nPole pred triedenim\n");
 	for(i=0;i<pocet_dier;i++) {
-		printf("Start diera %g end diera %g\n",*(pole_start+i),*(pole_end+i));
+		printf("%d. diera %g \t %g\n", i+1, *(pole_start+i), *(pole_end+i));
 	}
 	//triedenie poli - triedi sa podla pole_start - obdobne sa vsak presuva aj v pole_end
 	mergesort(pole_start, pocet_dier, pole_end);
 	//vypis utriedenych dat
-	printf("Pole po triedenim\n");
+	printf("--------------\nPole po triedenim\n");
 	for(i=0;i<pocet_dier;i++) {
-		printf("Start diera %g end diera %g\n",*(pole_start+i),*(pole_end+i));
+		printf("%d. diera %g \t %g\n", i+1, *(pole_start+i), *(pole_end+i));
 	}
 	//vlastny algoritmus hladania najmensieho poctu kobercekov 
-	zakryte = *(pole_start+0);					//po prvu dieru nemusim nic riesit
+	zakryte = 0;					//po prvu dieru nemusim nic riesit
 	i = 0;										//citac spracovanych dier
 	pocet_kobercov = 0;							//citac poctu kobercov
+	printf("-------------\nHladanie dier\n");
 	while(zakryte<=*(pole_end+pocet_dier-1)) {	//pokial nezakryjem koniec poslednej diery, abo podmienka na pocet dier
 		//ak som ciastocne zakryl dieru, nastavim jej zaciatok na koniec zakrytia
 		if(*(pole_start+i)<zakryte) *(pole_start+i) = zakryte;			
@@ -81,6 +88,7 @@ int main()
 			i++;
 			continue;
 		}
+		zakryte = *(pole_start+i);				//posuniem sa na zaciatok diery
 		do {									//zakryvam, kym nie je zakryta cela diera
 			zakryte += 1;
 			pocet_kobercov++;
@@ -88,6 +96,7 @@ int main()
 		} while(zakryte<=*(pole_end+i));
 		i++;
 	} //end whille
+	printf("=============\nCelkovo je potrebnych %d kobercekov na zakrytie dier.\n",pocet_dier);
 	free((void *) pole_start);
 	free((void *) pole_end);
 	fclose(f_in);
