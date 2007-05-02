@@ -1,5 +1,4 @@
 /* Jan Garaj
- * odovodnenie preco je to najlepsie riesenie 
  * teap zadanie cislo 3 - z1535
  */
 
