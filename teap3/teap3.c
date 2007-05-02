@@ -20,9 +20,7 @@ int main()
 	FILE *f_in;
 	char buffer[MAX_LINE_LENGTH], *d_start, *d_end, *endp;
 	double *pole_start, *pole_end, zakryte;
-	int pocet_dier, line, i, d, pocet_kobercov;
-
-	d = 10; //dlzka koberca
+	int pocet_dier, line, i, pocet_kobercov;
 
 	//otvorenie suboru
 	if((f_in=fopen(INPUT_FILE,"r"))==NULL) {
@@ -65,7 +63,7 @@ int main()
 		}
 	}
 	//vypis nacitanych dat
-	printf("--------------\nPole pred triedenim\n");
+	printf("Pole pred triedenim\n");
 	for(i=0;i<pocet_dier;i++) {
 		printf("%d. diera %g \t %g\n", i+1, *(pole_start+i), *(pole_end+i));
 	}
