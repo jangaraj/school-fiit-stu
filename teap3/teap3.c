@@ -93,7 +93,7 @@ int main()
 		} while(zakryte<=*(pole_end+i));
 		i++;
 	} //end whille
-	printf("=============\nCelkovo je potrebnych %d kobercekov na zakrytie dier.\n",pocet_dier);
+	printf("=============\nCelkovo je potrebnych %d kobercekov na zakrytie dier.\nJe to minimalny mozny pocet.",pocet_dier);
 	free((void *) pole_start);
 	free((void *) pole_end);
 	fclose(f_in);
