@@ -12,4 +12,3 @@ typedef struct ppravidla
 	char akcia[80];
 	ppravidla *next;
 }ppravidla;
-
