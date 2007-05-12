@@ -11,25 +11,19 @@ fakty *Vloz(fakty *pom,fakty *z_faktov)
 
 	novy=new fakty;
 	novy->next=NULL;
-	
-	for(i=0;i<40;i++)
-	{
+	for(i=0;i<40;i++) {
 		novy->fakt[i]=pom->fakt[i];
 	}
-	
 	iterator=z_faktov;
-	if(z_faktov->fakt[0]==0)
-	{
+	if(z_faktov->fakt[0]==0) {
 		z_faktov=novy;
 	}
-	else
-	{
+	else {
 		while(iterator->next!=NULL){iterator=iterator->next;}
 		iterator->next=novy;
-		
 	}
-	return(z_faktov);
 
+	return(z_faktov);
 }
 
 // pri nacit suborov, pouziva sa na vytvaranie pravidla, pravidlo ktore idem vlozit a kam vkladam
@@ -40,32 +34,28 @@ ppravidla *Vloz_pravidlo(ppravidla *pom,ppravidla *z_pravidiel)
 
 	novy=new ppravidla;
 	novy->next=NULL;
-	
-	for(i=0;i<40;i++)
-	{
+	for(i=0;i<40;i++) {
 		novy->meno[i]=pom->meno[i];
 	}
-
-	for(i=0;i<80;i++)
-	{
+	for(i=0;i<80;i++) {
 		novy->podmienka[i]=pom->podmienka[i];
 		novy->akcia[i]=pom->akcia[i];
 	}
-	
 	iterator=z_pravidiel;
-	if(z_pravidiel->meno[0]==0)
-	{
+	if(z_pravidiel->meno[0]==0)	{
 		z_pravidiel=novy;
 	}
-	else
-	{
+	else {
 		while(iterator->next!=NULL){iterator=iterator->next;}
 		iterator->next=novy;
 		
 	}
+
 	return(z_pravidiel);
 
 }
+
+
 // ci je prazdna mnozina
 bool IsEmpty(fakty *mnozina)
 {
@@ -81,8 +71,7 @@ void vypis(fakty *z_faktov)
 	iterator=z_faktov;
 
 	printf("\n");
-	while(iterator!=NULL)
-	{
+	while(iterator!=NULL) {
 		printf(" %s\n",iterator->fakt);
 		iterator=iterator->next;
 	}
@@ -99,41 +88,29 @@ int main(void)
 
 	fakty *z_faktov;
 	fakty *pom_fakt;
-
 	ppravidla *z_pravidiel;
 	ppravidla *pom_pravidlo;
-
-
 	z_faktov=new fakty;
 	z_faktov->fakt[0]=0;
 	z_faktov->next=NULL;
-
 	z_pravidiel=new ppravidla;
 	z_pravidiel->next=NULL;
 	z_pravidiel->meno[0]=0;
 	z_pravidiel->podmienka[0]=0;
 	z_pravidiel->akcia[0]=0;
-	
-
 	char veta[80];
 	char znak=0;
 	int i=0;
 	int zatvorka=0;
-
 	FILE *subor;
+
 	subor=fopen("fakty.txt","rd");
-	
-	if(subor!=NULL)
-	{
-		while(fscanf(subor,"%c",&znak)!=EOF)
-		{
+	if(subor!=NULL)	{
+		while(fscanf(subor,"%c",&znak)!=EOF) {
 			i=0;
-			if(znak=='(')
-			{
+			if(znak=='(') {
 				zatvorka++;
-				
-				while(zatvorka!=0)
-				{
+				while(zatvorka!=0) {
 					veta[i]=znak;
 					fscanf(subor,"%c",&znak);
 					if(znak=='(')zatvorka++;
@@ -143,30 +120,22 @@ int main(void)
 				veta[i]=znak;
 				veta[i+1]=0;
 				pom_fakt=new fakty;
-				for(i=0;i<40;i++)
-				{
+				for(i=0;i<40;i++) {
 					pom_fakt->fakt[i]=veta[i];
 				}
 				pom_fakt->next=NULL;
 				z_faktov=Vloz(pom_fakt,z_faktov);
 			}
-
 		}
 		fclose(subor);
 	}
-
 	subor=fopen("pravidla.txt","rd");
 	zatvorka=0;
-
-	if(subor!=NULL)
-	{
-		while(fscanf(subor,"%c",&znak)!=EOF)
-		{
+	if(subor!=NULL) {
+		while(fscanf(subor,"%c",&znak)!=EOF) {
 			i=0;
 			pom_pravidlo=new ppravidla;
-			
-			while(znak!=':')
-			{
+			while(znak!=':') {
 				pom_pravidlo->meno[i]=znak;
 				i++;
 				fscanf(subor,"%c",&znak);
@@ -177,14 +146,10 @@ int main(void)
 			fscanf(subor,"%s",veta);
 			fscanf(subor,"%c",&znak);
 			fscanf(subor,"%c",&znak);
-			
-			if(znak=='(')
-			{
+			if(znak=='(') {
 				zatvorka++;
 				i=0;
-
-				while(zatvorka!=0)
-				{
+				while(zatvorka!=0) {
 					veta[i]=znak;
 					fscanf(subor,"%c",&znak);
 					if(znak=='(')zatvorka++;
@@ -193,23 +158,17 @@ int main(void)
 				}
 				veta[i]=znak;
 				veta[i+1]=0;
-				for(i=0;i<80;i++)
-				{
+				for(i=0;i<80;i++) {
 					pom_pravidlo->podmienka[i]=veta[i];
-					
 				}
 			}
 			fscanf(subor,"%s",veta);
 			fscanf(subor,"%c",&znak);
 			fscanf(subor,"%c",&znak);
-			
-			if(znak=='(')
-			{
+			if(znak=='(') {
 				zatvorka++;
 				i=0;
-
-				while(zatvorka!=0)
-				{
+				while(zatvorka!=0) {
 					veta[i]=znak;
 					fscanf(subor,"%c",&znak);
 					if(znak=='(')zatvorka++;
@@ -218,43 +177,30 @@ int main(void)
 				}
 				veta[i]=znak;
 				veta[i+1]=0;
-				for(i=0;i<80;i++)
-				{
+				for(i=0;i<80;i++) {
 					pom_pravidlo->akcia[i]=veta[i];
-					
 				}
-				
 			}
 			z_pravidiel=Vloz_pravidlo(pom_pravidlo,z_pravidiel);
 			fscanf(subor,"%c",&znak);
 			fscanf(subor,"%c",&znak);
-
 		}
 		fclose(subor);
 	}
-
-
 	fakty *mnozina,*mnozina_akcii;
 	ppravidla *iterator=z_pravidiel;
-	
-	
 	bool test=true;
-	
-	while(test)
-	{
+	while(test) {
 		// vytvori sa mnozina na ukladanie ked sa poddari splnit podmienku, tak tam ulozim akciu -|> za potom
 		mnozina=new fakty;
 		mnozina->fakt[0]=0;
 		mnozina->next=NULL;
-
 		// akcie pre vsetky pravidla
 		mnozina_akcii=new fakty;
 		mnozina_akcii->fakt[0]=0;
 		mnozina_akcii->next=NULL;
-
 		// prejdem vsetky pravidla
-		while(iterator!=NULL)
-		{
+		while(iterator!=NULL) {
 			// zoznam faktov, pravidlo, prve, druhe .., do mnozina sa pridaju akcie, 0 -> som na nultom znaku 
 			mnozina=Expand(z_faktov,iterator,mnozina,0);
 			// pridam do mn akcii
@@ -262,15 +208,12 @@ int main(void)
 			mnozina=new fakty;
 			mnozina->fakt[0]=0;
 			mnozina->next=NULL;
-
 			iterator=iterator->next;
 		}
 		// prejdem celu mnozinu akciia vyhodim take ktora tam uz su a ma ich pridat, alebo vymazem take ktore mam vymazat a tam niesu ..
 		mnozina_akcii=Vyrad(mnozina_akcii,z_faktov);
-		
 		// ake je prazdna tak konec, ak nie je
-		if(!IsEmpty(mnozina_akcii))
-		{
+		if(!IsEmpty(mnozina_akcii)) {
 			//z mnozi ny akcii pridam prve pravidlo do zoznamu faktov
 			z_faktov=Aplikuj(mnozina_akcii,z_faktov);
 			delete mnozina;
@@ -280,7 +223,6 @@ int main(void)
 			test=true;
 		}
 		else test=false;
-		
 		vypis(z_faktov);
 		getchar();
 	}
@@ -293,13 +235,12 @@ int main(void)
 fakty *Pridaj_akcie(fakty *mnozina_akcii,fakty *mnozina)
 {
 	fakty *i_akcii,*i;
+
 	if(mnozina==NULL)return(mnozina_akcii);
 	if(mnozina->fakt[0]==0)return(mnozina_akcii);
-
 	if(mnozina_akcii->fakt[0]==0)return(mnozina);
 	i_akcii=mnozina_akcii;
 	i=mnozina;
-
 	while(i_akcii->next!=NULL)i_akcii=i_akcii->next;
 	i_akcii->next=i;
 	return(mnozina_akcii);
@@ -315,13 +256,11 @@ fakty *Aplikuj(fakty *mnozina,fakty *z_faktov)
 	fakty *pom;
 	
 	sscanf(mnozina->fakt+3,"%s",buffer);
-	if(!strncmp(buffer,"pridaj",6))
-	{
+	if(!strncmp(buffer,"pridaj",6)) {
 		pom=new fakty;
 		pom->fakt[0]='(';
 		pom->fakt[1]=' ';
-		for(i=2;i<40;i++)
-		{
+		for(i=2;i<40;i++) {
 			pom->fakt[i]=mnozina->fakt[i+8];
 			if(pom->fakt[i]==')')break;
 		}
@@ -329,20 +268,18 @@ fakty *Aplikuj(fakty *mnozina,fakty *z_faktov)
 		z_faktov=Vloz(pom,z_faktov);
 		return(z_faktov);
 	}
-	else
-	{
+	else {
 		pom=new fakty;
 		pom->fakt[0]='(';
 		pom->fakt[1]=' ';
-		for(i=2;i<40;i++)
-		{
+		for(i=2;i<40;i++) {
 			pom->fakt[i]=mnozina->fakt[i+7];
 			if(pom->fakt[i]==')')break;
 		}
 		pom->fakt[i+1]=0;
 		z_faktov=Vymaz(pom,z_faktov);
-
 	}
+
 	return(z_faktov);
 }
 
@@ -355,12 +292,13 @@ fakty *Vymaz(fakty *pom,fakty *z_faktov)
 	if(!strncmp(iterator->fakt,pom->fakt,strlen(pom->fakt)))
 		return(iterator->next);
 	while(strncmp(iterator->next->fakt,pom->fakt,strlen(pom->fakt))){iterator=iterator->next;}
-	if(!strncmp(iterator->next->fakt,pom->fakt,strlen(pom->fakt)))
-	{
+	if(!strncmp(iterator->next->fakt,pom->fakt,strlen(pom->fakt))) {
 		iterator->next=iterator->next->next;
 	}
 	return(z_faktov);
 }
+
+
 fakty *Odstran(fakty *mnozina,fakty *iterator);
 
 // vyradi akcie ktore netreba
@@ -371,25 +309,20 @@ fakty *Vyrad(fakty *mnozina,fakty *z_faktov)
 	fakty *iterator,*preh;
 	char buffer[40];
 	bool odznova=false;	
-	if(mnozina->fakt[0]==0)return(mnozina);
-	
-	iterator=mnozina;
 
+	if(mnozina->fakt[0]==0)return(mnozina);
+	iterator=mnozina;
 	// prejdem celu mozinu akcii
-	while(iterator!=NULL)
-	{
+	while(iterator!=NULL) {
 		// nacitam slovo z mnoziny akcii
 		sscanf(iterator->fakt+3,"%s",buffer);
 		// ak to je pridaj
-		if(!strncmp(buffer,"pridaj",6))
-		{
+		if(!strncmp(buffer,"pridaj",6))	{
 			preh=z_faktov;
 			// prejde cez vsetky fakty
-			while(preh!=NULL)
-			{
+			while(preh!=NULL) {
 				//ak tam take previdlo uz je
-				if(!strncmp(preh->fakt+2,iterator->fakt+10,strlen(preh->fakt+2)))
-				{
+				if(!strncmp(preh->fakt+2,iterator->fakt+10,strlen(preh->fakt+2))) {
 					//odstranim ho z mnoziny, ak uz je mnozina prazdna tak vratim null
 					if((mnozina=Odstran(mnozina,iterator)) == NULL)return(NULL);
 					//prehladavam znova celu mnozinu ak som ju zmenil
@@ -404,32 +337,29 @@ fakty *Vyrad(fakty *mnozina,fakty *z_faktov)
 			odznova=false;
 		}
 		// ak vymaz
-		else if(!strncmp(buffer,"vymaz",5))
-		{
+		else if(!strncmp(buffer,"vymaz",5)) {
 			preh=z_faktov;
 			// prejde fekty
-			while(preh!=NULL)
-			{
+			while(preh!=NULL) {
 				// ak ho najdem brejk
 				if(!strncmp(preh->fakt+2,iterator->fakt+9,strlen(preh->fakt+2)))
 				break;
 				else preh=preh->next;
 			}
 			// ak som presiel vsetky a nenasiel somtaky coo treba vymzata tak akciu odstranim
-			if(preh==NULL)
-			{
+			if(preh==NULL) {
 				if((mnozina=Odstran(mnozina,iterator)) == NULL)return(NULL);
 				iterator=mnozina;
 			}
 			else iterator=iterator->next;
 		}
-		else if(!strncmp(buffer,"sprava",6))
-		{
+		else 
+		  if(!strncmp(buffer,"sprava",6)) {
 			if((mnozina=Odstran(mnozina,iterator)) == NULL)return(NULL);
 			iterator=mnozina;
-		}
-
+		  }
 	}
+
 	return(mnozina);
 }
 
@@ -440,20 +370,18 @@ fakty *Odstran(fakty *mnozina,fakty *iterator)
 	fakty *pom;
 
 	if(mnozina->fakt[0]==0)return(mnozina);
-	if(mnozina==iterator)
-	{
+	if(mnozina==iterator) {
 		return(mnozina->next);
 	}
 	pom=mnozina;
-	while((pom!=NULL)&&(pom->next!=iterator))
-	{
+	while((pom!=NULL)&&(pom->next!=iterator)) {
 		pom=pom->next;
 	}
-	if(pom!=NULL)
-	{
+	if(pom!=NULL) {
 		pom->next=iterator->next;
 	}
 	delete iterator;
+
 	return(mnozina);
 }
 
@@ -465,75 +393,58 @@ ppravidla *Kopia(ppravidla *pom)
 
 	novy=new ppravidla;
 	novy->next=NULL;
-	
-	for(i=0;i<13;i++)
-	{
+	for(i=0;i<13;i++) {
 		novy->meno[i]=pom->meno[i];
 	}
-
-	for(i=0;i<80;i++)
-	{
+	for(i=0;i<80;i++) {
 		novy->podmienka[i]=pom->podmienka[i];
 		novy->akcia[i]=pom->akcia[i];
 	}
-		novy->next=pom->next;
-	return(novy);
+	novy->next=pom->next;
 
+	return(novy);
 }
 
 bool Mensi (fakty *a,fakty *b);
 fakty *Vloz_mnozina(char *text,fakty *mnozina); 
-
 int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y);
 
 
 // rek funkcia, zoz fakt, jednmo pravidlo, do mnoz pridavam
 fakty *Expand(fakty *z_faktov,ppravidla *pravidlo,fakty *mnozina,int start)
 {
-	
 	// do pomocne si ulozim to pravidlo aby som si to neprepisoval
 	// z_vymeny
 	ppravidla *pomocne,*z_vymeny=NULL;
 
 	// prejde cez vsetky fakty
 	fakty *fiterator=z_faktov;
-
 	// x poloha v pravidle, y poloha vo fakte, size, velkost vymeneneho slova jano = 4
 	int i,x=start,y=2,size;
 	// rozne ... brat toho a toho
 	char meno1[10],meno2[10];
-	
 	// vytvori kopiu
 	pomocne=Kopia(pravidlo);
-		
 	// prejdem zoz faktov
-	while(fiterator!=NULL)
-	{
-
+	while(fiterator!=NULL) {
 		while(pomocne->podmienka[x]=='(')x++;
 		while(pomocne->podmienka[x]==' ')x++;
-
 		// ka ma pravidlo podmienku
-		if(pomocne->podmienka[x]!=0)
-		{
+		if(pomocne->podmienka[x]!=0) {
 			i=0;
-			// preskocim medzery vi\o faktoch
-			if(fiterator->fakt[y]==' ')y++;
+			// preskocim medzery vo faktoch
+			if(fiterator->fakt[y]==' ') y++;
 			// kkym sa rovna taext a lebo otaznik
-			while((fiterator->fakt[y]==pomocne->podmienka[x])||(pomocne->podmienka[x]=='?'))
-			{
+			while((fiterator->fakt[y]==pomocne->podmienka[x])||(pomocne->podmienka[x]=='?')) {
 				//ak otaznik
-				if(pomocne->podmienka[x]=='?')
-				{
+				if(pomocne->podmienka[x]=='?') {
 					z_vymeny=Kopia(pomocne);
 //					if(fiterator==NULL)return(NULL); // nenasiel nijake vhodne
-					
 					//vracia velkost vymeneho slova
 					//z_vymeny a pomocne -> pravidlo, fiterator je aktualny fakt
 					//posuniem sa na poz x, vlozim slovo z faktu(fiterator) a zvyskok doplnim z pomocneho
 					// ak nezamenil ... velkost bola nula
-					if(/*(fiterator!=NULL)&&*/(!(size=Vymena(z_vymeny,pomocne,fiterator,x,y))))
-					{
+					if(!(size=Vymena(z_vymeny,pomocne,fiterator,x,y))) {
 /*						fiterator=fiterator->next;
 						y=2; x=start;
 						pomocne=Kopia(pravidlo);
@@ -546,30 +457,26 @@ fakty *Expand(fakty *z_faktov,ppravidla *pravidlo,fakty *mnozina,int start)
 				else {x++;y++;i++;}
 			}
 			// ak som na konci faktu
-			if(y==(int)strlen(fiterator->fakt))
-			{	
+			if(y==(int)strlen(fiterator->fakt)) {	
 				// ak mam dalsiu podmienku
-				if(pomocne->podmienka[x]=='(')
-				{
+				if(pomocne->podmienka[x]=='(') {
 					// rekurzivne idem robit dalsiu ... zoz faktov, kopia upraveneho (prve uz nahradene), mnozi na do ktorej ukladam, pozicia
 					mnozina = Expand(z_faktov,Kopia(pomocne),mnozina,x);
 				}
 				// ak som na konci podmienky
-				else if(pomocne->podmienka[x]==')')
-				{
+				else 
+				  if(pomocne->podmienka[x]==')') {
 					// pridam akciu do mnoziny
 					mnozina = Vloz_mnozina(pomocne->akcia,mnozina);
 				}
-				else
-				{
+				else {
 					// k nieco ine ...
 					printf("\n Nespravny ukoncovaci znak %c %d:",pomocne->podmienka[x],x);
 				}
-				
 			}
 			// ak nhajdem znak <> 
-			else if(pomocne->podmienka[x]=='<')
-			{
+			else 
+			  if(pomocne->podmienka[x]=='<') {
 				// posun sa o znak
 				x+=3;
 				// nazitaj mena
@@ -588,6 +495,7 @@ fakty *Expand(fakty *z_faktov,ppravidla *pravidlo,fakty *mnozina,int start)
 			fiterator=fiterator->next;
 		}
 	}
+
 	return(mnozina);
 }
 
@@ -596,22 +504,20 @@ fakty *Expand(fakty *z_faktov,ppravidla *pravidlo,fakty *mnozina,int start)
 fakty *Vloz_mnozina(char *text,fakty *mnozina)
 {
 	fakty *pom,*iterator;
-
 	pom=new fakty;
 	int i;
 
-	for(i=0;i<40;i++)
-	{
+	for(i=0;i<40;i++) {
 		pom->fakt[i]=text[i];
 	}
 	pom->next=NULL;
-	if(mnozina->fakt[0]==0)mnozina=pom;
-	else
-	{
+	if(mnozina->fakt[0]==0) mnozina=pom;
+	else {
 		iterator=mnozina;
-		while(iterator->next!=NULL)iterator=iterator->next;
+		while(iterator->next!=NULL) iterator=iterator->next;
 		iterator->next=pom;
 	}
+
 	return(mnozina);
 }
 
@@ -625,36 +531,28 @@ int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y)
 	char premenna[5],meno[15],slovo[15],kontrolny;
 	// v_mena velkost mena, ...
 	int i,j,v_mena=0,v_premennej=0,v_slova=0;
-	
 //	z_vymeny=Kopia(pomocne);
 	meno[0]='\0';
-
 	// nacita sa premenna co sa ide nahradzovat
 	sscanf(z_vymeny->podmienka+x,"%s",premenna);
 	// velkost prem
 	v_premennej=strlen(premenna);
-
-		// mesmie to byt <> a musi to byt velkyt znak, teda meno, nacitava sa z faktu
-		if((fiterator->fakt[y]!='<')&&(fiterator->fakt[y]<='Z'))
-		{	
+	// mesmie to byt <> a musi to byt velkyt znak, teda meno, nacitava sa z faktu
+	if((fiterator->fakt[y]!='<')&&(fiterator->fakt[y]<='Z')) {	
 			// y z faktu      ... z faktu nacitam meno
 			sscanf(fiterator->fakt+y,"%s",meno);
 			v_mena=strlen(meno);
 			// y na fakt, y ma novu funkciu, bude tam pozicia zo zdrojoveho previdla
 			y=x; /// x je z cieloveho pravidla  y bude zo zdrojoveho pravidla
-
 			// prejde cez celu podmienku a nahradom vsetky vyskyty pewmennej menom
 			// nacitam slovo a porovnavam s premennou
-			while(sscanf(z_vymeny->podmienka+x,"%s",slovo)!=0)
-			{
+			while(sscanf(z_vymeny->podmienka+x,"%s",slovo)!=0) {
 				v_slova=strlen(slovo);
 				// ak prva nemusi byt, ak premenna a slovo su rovnake, treba na hradit slovo menom
-				if((v_premennej==v_slova)&&(!strncmp(premenna,slovo,v_premennej)))
-				{
+				if((v_premennej==v_slova)&&(!strncmp(premenna,slovo,v_premennej))) {
 					i=x;j=0;
 					// do z_vymeny zacnem pisat meno od pozicie premennej
-					for(i=i;i<(x+v_mena);i++,j++)
-					{
+					for(i=i;i<(x+v_mena);i++,j++) {
 						z_vymeny->podmienka[i]=meno[j];
 					}
 					// vymeni a da nulu
@@ -666,8 +564,7 @@ int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y)
 					y+=1+v_premennej;
 				}
 				// ak to neni premenna tak v oboch o slovo
-				else 
-				{
+				else {
 					x+=(1+v_slova);
 					y+=(1+v_slova);
 				}
@@ -676,14 +573,11 @@ int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y)
 			}
 			// to iste ale na akcii
 			x=3; y=3;
-			while(sscanf(z_vymeny->akcia+x,"%s",slovo)!=0)
-			{
+			while(sscanf(z_vymeny->akcia+x,"%s",slovo)!=0) {
 				v_slova=strlen(slovo);
-				if((v_premennej==v_slova)&&(!strncmp(premenna,slovo,v_premennej)))
-				{
+				if((v_premennej==v_slova)&&(!strncmp(premenna,slovo,v_premennej))) {
 					i=x;j=0;
-					for(i=i;i<(x+v_mena);i++,j++)
-					{
+					for(i=i;i<(x+v_mena);i++,j++) {
 						z_vymeny->akcia[i]=meno[j];
 					}
 					z_vymeny->akcia[i]='\0';
@@ -691,26 +585,16 @@ int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y)
 					x+=1+v_mena;
 					y+=1+v_premennej;
 				}
-				else 
-				{
+				else {
 					x+=(1+v_slova);
 					y+=(1+v_slova);
 				}
 				kontrolny=z_vymeny->akcia[x-1];
-				if(kontrolny==0)break;
+				if(kontrolny==0) break;
 			}
 		// vratim 0 ak sa nenahradzalo
-		}else return(0);
-	
+		}
+	    else return(0);
 		// vratim velkost mena ak sa nahradzalo
 		return(v_mena);
 }
-
-/*
-bool Mensi (fakty *a,fakty *b)
-{
-	if((a==NULL)||(b==NULL))return(false);
-	while((a->next!=NULL)&&(a->next!=b))a=a->next;
-	if(a->next==b)return(true);
-	else return(false);
-}*/
