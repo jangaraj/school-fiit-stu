@@ -5,10 +5,10 @@ typedef struct fakty
 }
 fakty;
 
-typedef struct ppravidla
+typedef struct def_pravidlo
 {
 	char meno[13];
 	char podmienka[80];
 	char akcia[80];
-	ppravidla *next;
-}ppravidla;
+	def_pravidlo *next;
+}def_pravidlo;
