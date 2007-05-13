@@ -2,90 +2,21 @@
 #include <string.h>
 #include "struktury.h"
 
-
-// vklada novy fakt pom  do zoznamu faktov, vola sa pri aplikuj a nacitani suboru
-fakty *Vloz(fakty *pom,fakty *z_faktov)
-{
-	fakty *novy,*iterator;
-	int i=0;
-
-	novy=new fakty;
-	novy->next=NULL;
-	for(i=0;i<40;i++) {
-		novy->fakt[i]=pom->fakt[i];
-	}
-	iterator=z_faktov;
-	if(z_faktov->fakt[0]==0) {
-		z_faktov=novy;
-	}
-	else {
-		while(iterator->next!=NULL){iterator=iterator->next;}
-		iterator->next=novy;
-	}
-
-	return(z_faktov);
-}
-
-// pri nacit suborov, pouziva sa na vytvaranie pravidla, pravidlo ktore idem vlozit a kam vkladam
-ppravidla *Vloz_pravidlo(ppravidla *pom,ppravidla *z_pravidiel)
-{
-	ppravidla *novy,*iterator;
-	int i=0;
-
-	novy=new ppravidla;
-	novy->next=NULL;
-	for(i=0;i<40;i++) {
-		novy->meno[i]=pom->meno[i];
-	}
-	for(i=0;i<80;i++) {
-		novy->podmienka[i]=pom->podmienka[i];
-		novy->akcia[i]=pom->akcia[i];
-	}
-	iterator=z_pravidiel;
-	if(z_pravidiel->meno[0]==0)	{
-		z_pravidiel=novy;
-	}
-	else {
-		while(iterator->next!=NULL){iterator=iterator->next;}
-		iterator->next=novy;
-		
-	}
-
-	return(z_pravidiel);
-
-}
-
-
-// ci je prazdna mnozina
-bool IsEmpty(fakty *mnozina)
-{
-	if(mnozina==NULL)return(true);
-	if (mnozina->fakt[0]==0) return(true);
-	return(false);
-}
-
-// vypis ...
-void vypis(fakty *z_faktov)
-{
-	fakty *iterator;
-	iterator=z_faktov;
-
-	printf("\n");
-	while(iterator!=NULL) {
-		printf(" %s\n",iterator->fakt);
-		iterator=iterator->next;
-	}
-}
-
-fakty *Expand(fakty *z_faktov,ppravidla *z_pravidiel,fakty *mnozina,int x);
 ppravidla *Kopia(ppravidla *pom);
+ppravidla *Vloz_pravidlo(ppravidla *pom,ppravidla *z_pravidiel);
 fakty *Vyrad(fakty *mnozina,fakty *z_faktov);
 fakty *Aplikuj(fakty *mnozina,fakty *z_pravidiel);
+fakty *Expand(fakty *z_faktov,ppravidla *z_pravidiel,fakty *mnozina,int x);
 fakty *Pridaj_akcie(fakty *mnozina_akcii,fakty *mnozina);
+fakty *Vloz(fakty *pom,fakty *z_faktov);
+fakty *Vloz_mnozina(char *text,fakty *mnozina); 
+int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y);
+void vypis(fakty *z_faktov);
+bool IsEmpty(fakty *mnozina);
+
 
 int main(void)
 {
-
 	fakty *z_faktov;
 	fakty *pom_fakt;
 	ppravidla *z_pravidiel;
@@ -102,17 +33,21 @@ int main(void)
 	char znak=0;
 	int i=0;
 	int zatvorka=0;
-	FILE *subor;
+	FILE *infile;
 
-	subor=fopen("fakty.txt","rd");
-	if(subor!=NULL)	{
-		while(fscanf(subor,"%c",&znak)!=EOF) {
+	/* NACITANIE FAKTOV */
+	if((infile=fopen("fakty.txt","rd")) == NULL ) {
+		fprintf(stderr,"Error, opening fakty.txt\n");
+		return 1;
+	}
+	else {
+		while(fscanf(infile,"%c",&znak)!=EOF) {
 			i=0;
 			if(znak=='(') {
 				zatvorka++;
 				while(zatvorka!=0) {
 					veta[i]=znak;
-					fscanf(subor,"%c",&znak);
+					fscanf(infile,"%c",&znak);
 					if(znak=='(')zatvorka++;
 					if(znak==')')zatvorka--;
 					i++;
@@ -127,31 +62,35 @@ int main(void)
 				z_faktov=Vloz(pom_fakt,z_faktov);
 			}
 		}
-		fclose(subor);
+		fclose(infile);
 	}
-	subor=fopen("pravidla.txt","rd");
+	/* NACITANIE PRAVIDIEL */
 	zatvorka=0;
-	if(subor!=NULL) {
-		while(fscanf(subor,"%c",&znak)!=EOF) {
+	if((infile=fopen("pravidla.txt","rd")) == NULL) {
+		fprintf(stderr,"Error, opening pravidla.txt\n");
+		return 1;
+	}
+	else {
+		while(fscanf(infile,"%c",&znak)!=EOF) {
 			i=0;
 			pom_pravidlo=new ppravidla;
 			while(znak!=':') {
 				pom_pravidlo->meno[i]=znak;
 				i++;
-				fscanf(subor,"%c",&znak);
+				fscanf(infile,"%c",&znak);
 			}
 			pom_pravidlo->meno[i]=znak;
 			pom_pravidlo->meno[i+1]=0;
 			pom_pravidlo->next=NULL;
-			fscanf(subor,"%s",veta);
-			fscanf(subor,"%c",&znak);
-			fscanf(subor,"%c",&znak);
+			fscanf(infile,"%s",veta);
+			fscanf(infile,"%c",&znak);
+			fscanf(infile,"%c",&znak);
 			if(znak=='(') {
 				zatvorka++;
 				i=0;
 				while(zatvorka!=0) {
 					veta[i]=znak;
-					fscanf(subor,"%c",&znak);
+					fscanf(infile,"%c",&znak);
 					if(znak=='(')zatvorka++;
 					if(znak==')')zatvorka--;
 					i++;
@@ -162,15 +101,15 @@ int main(void)
 					pom_pravidlo->podmienka[i]=veta[i];
 				}
 			}
-			fscanf(subor,"%s",veta);
-			fscanf(subor,"%c",&znak);
-			fscanf(subor,"%c",&znak);
+			fscanf(infile,"%s",veta);
+			fscanf(infile,"%c",&znak);
+			fscanf(infile,"%c",&znak);
 			if(znak=='(') {
 				zatvorka++;
 				i=0;
 				while(zatvorka!=0) {
 					veta[i]=znak;
-					fscanf(subor,"%c",&znak);
+					fscanf(infile,"%c",&znak);
 					if(znak=='(')zatvorka++;
 					if(znak==')')zatvorka--;
 					i++;
@@ -182,10 +121,10 @@ int main(void)
 				}
 			}
 			z_pravidiel=Vloz_pravidlo(pom_pravidlo,z_pravidiel);
-			fscanf(subor,"%c",&znak);
-			fscanf(subor,"%c",&znak);
+			fscanf(infile,"%c",&znak);
+			fscanf(infile,"%c",&znak);
 		}
-		fclose(subor);
+		fclose(infile);
 	}
 	fakty *mnozina,*mnozina_akcii;
 	ppravidla *iterator=z_pravidiel;
@@ -230,19 +169,20 @@ int main(void)
 	return 0;
 }
 
-// vola sa pouziva aby poskladala z mnoziny prida vsetky akcie do mnoziny akcii
-// vola sa to v maine, mnoz_akcii -> vsetky ...
+/* vola sa pouziva aby poskladala z mnoziny prida vsetky akcie do mnoziny akcii
+ vola sa to v maine, mnoz_akcii -> vsetky */
 fakty *Pridaj_akcie(fakty *mnozina_akcii,fakty *mnozina)
 {
 	fakty *i_akcii,*i;
 
-	if(mnozina==NULL)return(mnozina_akcii);
-	if(mnozina->fakt[0]==0)return(mnozina_akcii);
-	if(mnozina_akcii->fakt[0]==0)return(mnozina);
+	if(mnozina==NULL) return(mnozina_akcii);
+	if(mnozina->fakt[0]==0) return(mnozina_akcii);
+	if(mnozina_akcii->fakt[0]==0) return(mnozina);
 	i_akcii=mnozina_akcii;
 	i=mnozina;
-	while(i_akcii->next!=NULL)i_akcii=i_akcii->next;
+	while(i_akcii->next!=NULL) i_akcii=i_akcii->next;
 	i_akcii->next=i;
+
 	return(mnozina_akcii);
 }
 
@@ -295,6 +235,7 @@ fakty *Vymaz(fakty *pom,fakty *z_faktov)
 	if(!strncmp(iterator->next->fakt,pom->fakt,strlen(pom->fakt))) {
 		iterator->next=iterator->next->next;
 	}
+
 	return(z_faktov);
 }
 
@@ -310,7 +251,7 @@ fakty *Vyrad(fakty *mnozina,fakty *z_faktov)
 	char buffer[40];
 	bool odznova=false;	
 
-	if(mnozina->fakt[0]==0)return(mnozina);
+	if(mnozina->fakt[0]==0) return(mnozina);
 	iterator=mnozina;
 	// prejdem celu mozinu akcii
 	while(iterator!=NULL) {
@@ -405,9 +346,7 @@ ppravidla *Kopia(ppravidla *pom)
 	return(novy);
 }
 
-bool Mensi (fakty *a,fakty *b);
-fakty *Vloz_mnozina(char *text,fakty *mnozina); 
-int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y);
+
 
 
 // rek funkcia, zoz fakt, jednmo pravidlo, do mnoz pridavam
@@ -598,3 +537,84 @@ int Vymena(ppravidla *z_vymeny,ppravidla *pomocne,fakty *fiterator,int x,int y)
 		// vratim velkost mena ak sa nahradzalo
 		return(v_mena);
 }
+
+// vypis ...
+void vypis(fakty *z_faktov)
+{
+	fakty *iterator;
+	iterator=z_faktov;
+
+	printf("\n");
+	while(iterator!=NULL) {
+		printf(" %s\n",iterator->fakt);
+		iterator=iterator->next;
+	}
+}
+
+
+
+// ci je prazdna mnozina
+bool IsEmpty(fakty *mnozina)
+{
+	if(mnozina==NULL)return(true);
+	if (mnozina->fakt[0]==0) return(true);
+	return(false);
+}
+
+
+// pri nacit suborov, pouziva sa na vytvaranie pravidla, pravidlo ktore idem vlozit a kam vkladam
+ppravidla *Vloz_pravidlo(ppravidla *pom,ppravidla *z_pravidiel)
+{
+	ppravidla *novy,*iterator;
+	int i=0;
+
+	novy=new ppravidla;
+	novy->next=NULL;
+	for(i=0;i<40;i++) {
+		novy->meno[i]=pom->meno[i];
+	}
+	for(i=0;i<80;i++) {
+		novy->podmienka[i]=pom->podmienka[i];
+		novy->akcia[i]=pom->akcia[i];
+	}
+	iterator=z_pravidiel;
+	if(z_pravidiel->meno[0]==0)	{
+		z_pravidiel=novy;
+	}
+	else {
+		while(iterator->next!=NULL){iterator=iterator->next;}
+		iterator->next=novy;
+		
+	}
+
+	return(z_pravidiel);
+
+}
+
+
+
+
+// vklada novy fakt pom  do zoznamu faktov, vola sa pri aplikuj a nacitani suboru
+fakty *Vloz(fakty *pom,fakty *z_faktov)
+{
+	fakty *novy,*iterator;
+	int i=0;
+
+	novy=new fakty;
+	novy->next=NULL;
+	for(i=0;i<40;i++) {
+		novy->fakt[i]=pom->fakt[i];
+	}
+	iterator=z_faktov;
+	if(z_faktov->fakt[0]==0) {
+		z_faktov=novy;
+	}
+	else {
+		while(iterator->next!=NULL){iterator=iterator->next;}
+		iterator->next=novy;
+	}
+
+	return(z_faktov);
+}
+
+
