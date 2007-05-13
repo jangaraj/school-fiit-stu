@@ -65,6 +65,7 @@ int main(void)
 		fclose(infile);
 	}
 	/* NACITANIE PRAVIDIEL */
+
 	zatvorka=0;
 	if((infile=fopen("pravidla.txt","rd")) == NULL) {
 		fprintf(stderr,"Error, opening pravidla.txt\n");
