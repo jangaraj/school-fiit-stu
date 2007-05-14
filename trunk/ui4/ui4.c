@@ -9,7 +9,7 @@ fakty *remove_fakt(fakty *mnozina,fakty *zas_faktov);
 fakty *aplikuj(fakty *mnozina,fakty *zas_pravidiel);
 fakty *expanduj(fakty *zas_faktov,def_pravidlo *zas_pravidiel,fakty *mnozina,int x);
 fakty *insert_akcie(fakty *mnozina_akcii,fakty *mnozina);
-fakty *Vloz(fakty *pom,fakty *zas_faktov);
+fakty *vloz_fakt(fakty *pom,fakty *zas_faktov);
 fakty *odstran(fakty *mnozina,fakty *token);
 fakty *vloz_mnozina(char *text,fakty *mnozina);
 fakty *vymaz(fakty *pom,fakty *zas_faktov);
@@ -64,7 +64,7 @@ int main(void)
 					pom_fakt->fakt[i]=veta[i];
 				}
 				pom_fakt->next=NULL;
-				zas_faktov=Vloz(pom_fakt,zas_faktov);
+				zas_faktov=vloz_fakt(pom_fakt,zas_faktov);
 			}
 		}
 		fclose(infile);
@@ -208,7 +208,7 @@ fakty *aplikuj(fakty *mnozina,fakty *zas_faktov)
 			if(pom->fakt[i]==')')break;
 		}
 		pom->fakt[i+1]=0;
-		zas_faktov=Vloz(pom,zas_faktov);
+		zas_faktov=vloz_fakt(pom,zas_faktov);
 		return(zas_faktov);
 	}
 	else {
@@ -596,7 +596,7 @@ def_pravidlo *insert_pravidlo(def_pravidlo *pom,def_pravidlo *zas_pravidiel)
 
 
 //vklada novy fakt pom  do zoznamu faktov, vola sa pri aplikuj a nacitani suboru
-fakty *Vloz(fakty *pom,fakty *zas_faktov)
+fakty *vloz_fakt(fakty *pom,fakty *zas_faktov)
 {
 	fakty *novy,*token;
 	int i=0;
