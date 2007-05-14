@@ -364,61 +364,49 @@ fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int star
 			if(ftoken->fakt[y]==' ') y++;
 			//POKIAL NENAJDEM PODMIENKA[X] ALEBO OTAZNIK PRACUJEM WHILEOM
 			while((ftoken->fakt[y]==pomocne->podmienka[x])||(pomocne->podmienka[x]=='?')) {
-				//AK OTAZNIK  UROBIM EXCHANGE
+				//AK OTAZNIK UROBIM EXCHANGE NA POZICII X
 				if(pomocne->podmienka[x]=='?') {
 					z_vymeny=kopiruj(pomocne);
-//					if(ftoken==NULL)return(NULL); //nenasiel nijake vhodne
-					//vracia velkost vymeneho slova
-					//z_vymeny a pomocne -> pravidlo, ftoken je aktualny fakt
-					//posuniem sa na poz x, vlozim slovo z faktu(ftoken) a zvyskok doplnim z pomocneho
-					//ak nezamenil ... velkost bola nula
 					if(!(size=exchange(z_vymeny,pomocne,ftoken,x,y))) {
-/*						ftoken=ftoken->next;
-						y=2; x=start;
-						pomocne=kopiruj(pravidlo);
-*/						break;
+						break;
 					}
-					//posuniem sa o velkost slova a ulozim opet do pomocneho
+					//POSUN O VELKOST SLOVA
 					else {x+=size;y+=size;pomocne=z_vymeny;}
 				}
-				//posuvanie po znakoch akkrovnake
+				//POSUN PO ZNAKOCH
 				else {x++;y++;i++;}
 			}
-			//ak som na konci faktu
+			//SOM UZ NA KONCI FAKTU
 			if(y==(int)strlen(ftoken->fakt)) {	
-				//ak mam dalsiu podmienku
+				//V PRIPADE ZE MAM DALSIU PODMIENKU REKURZIVNE ZAVOLAM EXCHANGE
 				if(pomocne->podmienka[x]=='(') {
-					//rekurzivne idem robit dalsiu ... zoz faktov, kopia upraveneho (prve uz nahradene), mnozi na do ktorej ukladam, pozicia
 					mnozina = expanduj(zas_faktov,kopiruj(pomocne),mnozina,x);
 				}
-				//ak som na konci podmienky
 				else 
 				  if(pomocne->podmienka[x]==')') {
-					//pridam akciu do mnoziny
+					//SOM NA KONCI PODMIENKY< TAK PRIDAM AKCIU DO MNOZINY
 					mnozina = vloz_mnozina(pomocne->akcia,mnozina);
 				}
 				else {
-					//k nieco ine ...
 					printf("\n Nespravny ukoncovaci znak %c %d:",pomocne->podmienka[x],x);
+					//PROBLEM S KONCOM
 				}
 			}
-			//ak nhajdem znak <> 
 			else 
 			  if(pomocne->podmienka[x]=='<') {
-				//posun sa o znak
+				//POSUN ZNAKU
 				x+=3;
-				//nazitaj mena
+				//NACITANIE MENA
 				sscanf(pomocne->podmienka+x,"%s",meno1);
 				sscanf(pomocne->podmienka+x+strlen(meno1),"%s",meno2);
-				//ak su rovnake vraciam mnozinu bez zmeny
+				//AK SA ROVNAJU NIC NEROB
 				if(strcmp(meno1,meno2) == 0) return(mnozina);
-				//inak pridam akciu a vratim mnozinu s akciiou
+				//AK ROZNE PRIDAJ AKCIU DO MNOZINY
 				return((mnozina = vloz_mnozina(pomocne->akcia,mnozina)));
 			}
-			//z brejku sem -|> fakt sa nehodi pre pravidlo
-			//obnovim pravdlo
+			//OBNOVIM SI POKAZENE PRAVIDLO
 			pomocne=kopiruj(pravidlo);
-			//nastavim zac poz a posuniem sa na dalsi fakt
+			//SEEK NA ZACIATOK A IDEM SPRACOVAT DALSI FAKT
 			y=2;x=start;
 			ftoken=ftoken->next;
 		}
@@ -427,8 +415,7 @@ fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int star
 	return(mnozina);
 }
 
-//ked expand nasiel vysledok, podarilo sa mu splnit podmienkovu cast tak akciu pridal do mnoziny
-//text akcia, do mnoziny vkladam
+//VLOZENIE NOVEHO FAKTU-TEXTU DO MNOZINY
 fakty *vloz_mnozina(char *text,fakty *mnozina)
 {
 	fakty *pom,*token;
