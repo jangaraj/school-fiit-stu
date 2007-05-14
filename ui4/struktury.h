@@ -2,8 +2,7 @@ typedef struct fakty
 {
 	char fakt[40];
 	fakty *next;
-}
-fakty;
+}fakty;
 
 typedef struct def_pravidlo
 {
