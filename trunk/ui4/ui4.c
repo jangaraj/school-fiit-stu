@@ -13,7 +13,7 @@ fakty *vloz_fakt(fakty *pom,fakty *zas_faktov);
 fakty *odstran(fakty *mnozina,fakty *token);
 fakty *vloz_mnozina(char *text,fakty *mnozina);
 fakty *vymaz(fakty *pom,fakty *zas_faktov);
-int exchange(def_pravidlo *z_vymeny,def_pravidlo *pomocne,fakty *ftoken,int x,int y);
+int exchange(def_pravidlo *zas_vymen,def_pravidlo *pomocne,fakty *ftoken,int x,int y);
 void vypis(fakty *zas_faktov);
 bool is_empty(fakty *mnozina);
 
@@ -347,10 +347,10 @@ def_pravidlo *kopiruj(def_pravidlo *pom)
 //ZOBERIE FAKT A PRAVIDLO A MNOZINU KDE BUDEM PRIDAVAT
 fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int start)
 {
-	def_pravidlo *pomocne,*z_vymeny=NULL;
+	def_pravidlo *pomocne,*zas_vymen=NULL;
 
 	fakty *ftoken=zas_faktov;
-	//x poloha v pravidle, y poloha vo fakte, size, velkost vymeneneho slova jano = 4
+	//X PRAVIDLO, Y POLOHA, SIZE VELKOST VYMENEHO SLOVA
 	int i,x=start,y=2,size;
 	char meno1[10],meno2[10];
 	//V POMOCNE JE KOPIA PRAVIDLA ABY SOM SI HO NEPREPISOVAL
@@ -366,12 +366,12 @@ fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int star
 			while((ftoken->fakt[y]==pomocne->podmienka[x])||(pomocne->podmienka[x]=='?')) {
 				//AK OTAZNIK UROBIM EXCHANGE NA POZICII X
 				if(pomocne->podmienka[x]=='?') {
-					z_vymeny=kopiruj(pomocne);
-					if(!(size=exchange(z_vymeny,pomocne,ftoken,x,y))) {
+					zas_vymen=kopiruj(pomocne);
+					if(!(size=exchange(zas_vymen,pomocne,ftoken,x,y))) {
 						break;
 					}
 					//POSUN O VELKOST SLOVA
-					else {x+=size;y+=size;pomocne=z_vymeny;}
+					else {x+=size;y+=size;pomocne=zas_vymen;}
 				}
 				//POSUN PO ZNAKOCH
 				else {x++;y++;i++;}
@@ -438,64 +438,55 @@ fakty *vloz_mnozina(char *text,fakty *mnozina)
 
 
 //VYMIENA = NAVAZUJE PREMENNE
-int exchange(def_pravidlo *z_vymeny,def_pravidlo *pomocne,fakty *ftoken,int x,int y)
+int exchange(def_pravidlo *zas_vymen,def_pravidlo *pomocne,fakty *ftoken,int x,int y)
 {
 	
 	//do premenna ?X, do meno ide meno ktora sa ma nahrasit za ?X, slovo pomocna
 	char premenna[5],meno[15],slovo[15],kontrolny;
-	//v_mena velkost mena, ...
 	int i,j,v_mena=0,v_premennej=0,v_slova=0;
-	//z_vymeny=kopiruj(pomocne);
 	meno[0]='\0';
-	//nacita sa premenna co sa ide nahradzovat
-	sscanf(z_vymeny->podmienka+x,"%s",premenna);
-	//velkost prem
+	//PREMENNA, KTORU IDEM NAHRADZOVAT
+	sscanf(zas_vymen->podmienka+x,"%s",premenna);
 	v_premennej=strlen(premenna);
-	//mesmie to byt <> a musi to byt velkyt znak, teda meno, nacitava sa z faktu
 	if((ftoken->fakt[y]!='<')&&(ftoken->fakt[y]<='Z')) {	
-			//y z faktu      ... z faktu nacitam meno
 			sscanf(ftoken->fakt+y,"%s",meno);
 			v_mena=strlen(meno);
 			//y na fakt, y ma novu funkciu, bude tam pozicia zo zdrojoveho previdla
 			y=x; ///x je z cieloveho pravidla  y bude zo zdrojoveho pravidla
-			//prejde cez celu podmienku a nahradom vsetky vyskyty pewmennej menom
-			//nacitam slovo a porovnavam s premennou
-			while(sscanf(z_vymeny->podmienka+x,"%s",slovo)!=0) {
+			//PREJDEM CEZ CELU PODMIENKU A UROBIM ZAMENU ZA PREMENNU MENOM
+			while(sscanf(zas_vymen->podmienka+x,"%s",slovo)!=0) {
 				v_slova=strlen(slovo);
-				//ak prva nemusi byt, ak premenna a slovo su rovnake, treba na hradit slovo menom
 				if((v_premennej==v_slova)&&(!strncmp(premenna,slovo,v_premennej))) {
 					i=x;j=0;
-					//do z_vymeny zacnem pisat meno od pozicie premennej
+					//V ZAS_VYMENA MENO
 					for(i=i;i<(x+v_mena);i++,j++) {
-						z_vymeny->podmienka[i]=meno[j];
+						zas_vymen->podmienka[i]=meno[j];
 					}
-					//vymeni a da nulu
-					z_vymeny->podmienka[i]='\0';
-					//pripoji zvysok celej podmienky
-					strcat(z_vymeny->podmienka,pomocne->podmienka+y+v_premennej);
-					//posuniem sa v cielovej podmienke o meno a v zdrojovej o ?X
+					zas_vymen->podmienka[i]='\0';
+					//DOPLNI ZVYSOK PODMIENKY
+					strcat(zas_vymen->podmienka,pomocne->podmienka+y+v_premennej);
+					//SEEK
 					x+=1+v_mena;
 					y+=1+v_premennej;
 				}
-				//ak to neni premenna tak v oboch o slovo
-				else {
+				else {  	//AK TAM NIE JE POSUNIEM SA V OBOCH O SLOVO
 					x+=(1+v_slova);
 					y+=(1+v_slova);
 				}
-				kontrolny=z_vymeny->podmienka[x-1];
+				kontrolny=zas_vymen->podmienka[x-1];
 				if(kontrolny=='\0')break;
 			}
-			//to iste ale na akcii
+			//SPRACOVANIE ACKIE
 			x=3; y=3;
-			while(sscanf(z_vymeny->akcia+x,"%s",slovo)!=0) {
+			while(sscanf(zas_vymen->akcia+x,"%s",slovo)!=0) {
 				v_slova=strlen(slovo);
 				if((v_premennej==v_slova)&&(!strncmp(premenna,slovo,v_premennej))) {
 					i=x;j=0;
 					for(i=i;i<(x+v_mena);i++,j++) {
-						z_vymeny->akcia[i]=meno[j];
+						zas_vymen->akcia[i]=meno[j];
 					}
-					z_vymeny->akcia[i]='\0';
-					strcat(z_vymeny->akcia,pomocne->akcia+y+v_premennej);
+					zas_vymen->akcia[i]='\0';
+					strcat(zas_vymen->akcia,pomocne->akcia+y+v_premennej);
 					x+=1+v_mena;
 					y+=1+v_premennej;
 				}
@@ -503,13 +494,13 @@ int exchange(def_pravidlo *z_vymeny,def_pravidlo *pomocne,fakty *ftoken,int x,in
 					x+=(1+v_slova);
 					y+=(1+v_slova);
 				}
-				kontrolny=z_vymeny->akcia[x-1];
+				kontrolny=zas_vymen->akcia[x-1];
 				if(kontrolny==0) break;
 			}
-		//vratim 0 ak sa nenahradzalo
+		//0 AK NEDOSLO K NAHRADZANIU
 		}
 	    else return(0);
-		//vratim velkost mena ak sa nahradzalo
+		//VELKOST MENA< KTORU SOM NAHRADZAL
 		return(v_mena);
 }
 
