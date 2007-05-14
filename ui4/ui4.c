@@ -173,8 +173,6 @@ int main(void)
 	return 0;
 }
 
-/* vola sa pouziva aby poskladala z mnoziny prida vsetky akcie do mnoziny akcii
- vola sa to v maine, mnoz_akcii -> vsetky */
 fakty *insert_akcie(fakty *mnozina_akcii,fakty *mnozina)
 {
 	fakty *i_akcii,*i;
@@ -191,7 +189,7 @@ fakty *insert_akcie(fakty *mnozina_akcii,fakty *mnozina)
 }
 
 
-//aplikuje hned prvu akciu z tej velkej na mnozinu faktov (aj aplikuj aj vyrad z tej velkej)
+//APLIKUJE PRVU AKCIU NA FAKTY
 fakty *aplikuj(fakty *mnozina,fakty *zas_faktov)
 {
 	char buffer[40];
@@ -244,53 +242,49 @@ fakty *vymaz(fakty *pom,fakty *zas_faktov)
 
 
 
-//vyradi akcie ktore netreba
-//v mnozina hlada akcie, ktore z nej odstrani ak su nepotrebne, ak su v zozname faktov, atd ...
-//ak mam pridat to co uz tam je ...alebo vymazat to co tam neni ci je ci co ...
+//VYRADI AKCIE KTORE NIE SU POTREBNE
 fakty *remove_fakt(fakty *mnozina,fakty *zas_faktov)
 {
-	fakty *token,*preh;
 	char buffer[40];
-	bool odznova=false;	
+	bool znova=false;	
+	fakty *token,*f_pom;
 
 	if(mnozina->fakt[0]==0) return(mnozina);
 	token=mnozina;
 	//PRECHOD CELOU MNOZINOU
 	while(token!=NULL) {
-		//nacitam slovo z mnoziny akcii
+		//NACITANIE SLOVA Z MNOZINY AKCII
 		sscanf(token->fakt+3,"%s",buffer);
-		//ak to je pridaj
+		//PRIDAJ
 		if(!strncmp(buffer,"pridaj",6))	{
-			preh=zas_faktov;
-			//prejde cez vsetky fakty
-			while(preh!=NULL) {
-				//ak tam take previdlo uz je
-				if(!strncmp(preh->fakt+2,token->fakt+10,strlen(preh->fakt+2))) {
-					//odstranim ho z mnoziny, ak uz je mnozina prazdna tak vratim null
+			f_pom=zas_faktov;
+			//PRECHOD VSETKYMI FAKTAMI
+			while(f_pom!=NULL) {
+				if(!strncmp(f_pom->fakt+2,token->fakt+10,strlen(f_pom->fakt+2))) {
+					//AK TAM UZ JE DANE PRAVIDLO ODSTRANIM HO A AK JE UZ MNOZINA PRAZDNA VRATIM NULL
 					if((mnozina=odstran(mnozina,token)) == NULL)return(NULL);
-					//prehladavam znova celu mnozinu ak som ju zmenil
-					token=mnozina;odznova=true;break;
+					//NOVE PREHLADANIE MNOZINY
+					token=mnozina;znova=true;break;
 				}
-				//ak sa nerovna idem na dalsi fakt
-				else preh=preh->next;
+				//INAK IDEM NA DALSI FAKT
+				else f_pom=f_pom->next;
 			}
-			//ak som nic nezmenil idem na dalsiu akciu
-			if(!odznova)
+			//AK SOM NIC NEZMENIL DALSI AKCIA
+			if(!znova)
 				token=token->next;
-			odznova=false;
+			znova=false;
 		}
-		//ak vymaz
+		//VYMAZ
 		else if(!strncmp(buffer,"vymaz",5)) {
-			preh=zas_faktov;
-			//prejde fekty
-			while(preh!=NULL) {
-				//ak ho najdem brejk
-				if(!strncmp(preh->fakt+2,token->fakt+9,strlen(preh->fakt+2)))
+			f_pom=zas_faktov;
+			while(f_pom!=NULL) {
+				//AK NAJDEM DANY FAKY KONIEC
+				if(!strncmp(f_pom->fakt+2,token->fakt+9,strlen(f_pom->fakt+2)))
 				break;
-				else preh=preh->next;
+				else f_pom=f_pom->next;
 			}
-			//ak som presiel vsetky a nenasiel somtaky coo treba vymzata tak akciu odstranim
-			if(preh==NULL) {
+			//PRESIEL SOM VSETKY FAKTY A NENASIEL SOM DANY, TAK HO ODSTRANIM
+			if(f_pom==NULL) {
 				if((mnozina=odstran(mnozina,token)) == NULL)return(NULL);
 				token=mnozina;
 			}
@@ -306,13 +300,12 @@ fakty *remove_fakt(fakty *mnozina,fakty *zas_faktov)
 	return(mnozina);
 }
 
-//odstranuje akciu ak bola nepotrebna
-//vola sa vo vyrad, z ktorej mnoziny a druhy co sa ma vymazat
+//ODTSRANI AKCIU AK BOLA NEPOTREBNA
 fakty *odstran(fakty *mnozina,fakty *token)
 {
 	fakty *pom;
 
-	if(mnozina->fakt[0]==0)return(mnozina);
+	if(mnozina->fakt[0]==0)	return(mnozina);
 	if(mnozina==token) {
 		return(mnozina->next);
 	}
@@ -351,33 +344,27 @@ def_pravidlo *kopiruj(def_pravidlo *pom)
 
 
 
-//rekurzivna funkcia, zober fakt, jedno pravidlo, do mnoz pridavam
+//ZOBERIE FAKT A PRAVIDLO A MNOZINU KDE BUDEM PRIDAVAT
 fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int start)
 {
-	//do pomocne si ulozim to pravidlo aby som si to neprepisoval
-	//z_vymeny
 	def_pravidlo *pomocne,*z_vymeny=NULL;
 
-	//prejde cez vsetky fakty
 	fakty *ftoken=zas_faktov;
 	//x poloha v pravidle, y poloha vo fakte, size, velkost vymeneneho slova jano = 4
 	int i,x=start,y=2,size;
-	//rozne ... brat toho a toho
 	char meno1[10],meno2[10];
-	//vytvori kopiu
+	//V POMOCNE JE KOPIA PRAVIDLA ABY SOM SI HO NEPREPISOVAL
 	pomocne=kopiruj(pravidlo);
-	//prejdem zoz faktov
+	//PRECHOD CEZ ZASOBNIK FAKTOV
 	while(ftoken!=NULL) {
-		while(pomocne->podmienka[x]=='(')x++;
-		while(pomocne->podmienka[x]==' ')x++;
-		//ka ma pravidlo podmienku
+		while(pomocne->podmienka[x]=='(') x++;
+		while(pomocne->podmienka[x]==' ') x++;
 		if(pomocne->podmienka[x]!=0) {
 			i=0;
-			//preskocim medzery vo faktoch
 			if(ftoken->fakt[y]==' ') y++;
-			//kkym sa rovna taext a lebo otaznik
+			//POKIAL NENAJDEM PODMIENKA[X] ALEBO OTAZNIK PRACUJEM WHILEOM
 			while((ftoken->fakt[y]==pomocne->podmienka[x])||(pomocne->podmienka[x]=='?')) {
-				//ak otaznik
+				//AK OTAZNIK  UROBIM EXCHANGE
 				if(pomocne->podmienka[x]=='?') {
 					z_vymeny=kopiruj(pomocne);
 //					if(ftoken==NULL)return(NULL); //nenasiel nijake vhodne
@@ -539,7 +526,7 @@ int exchange(def_pravidlo *z_vymeny,def_pravidlo *pomocne,fakty *ftoken,int x,in
 		return(v_mena);
 }
 
-//vypis ...
+//VYPIS ZASOBNIKA FAKTOV
 void vypis(fakty *zas_faktov)
 {
 	fakty *token;
@@ -554,7 +541,7 @@ void vypis(fakty *zas_faktov)
 
 
 
-//ci je prazdna mnozina
+//URCI CI JE MNOZINA PRAZDNA
 bool is_empty(fakty *mnozina)
 {
 	if(mnozina==NULL)return(true);
@@ -563,7 +550,7 @@ bool is_empty(fakty *mnozina)
 }
 
 
-//pri nacit suborov, pouziva sa na vytvaranie pravidla, pravidlo ktore idem vlozit a kam vkladam
+//VKLADA PRAVIDLO DO ZASOBNIKA PRAVIDIEL
 def_pravidlo *insert_pravidlo(def_pravidlo *pom,def_pravidlo *zas_pravidiel)
 {
 	def_pravidlo *novy,*token;
@@ -595,7 +582,7 @@ def_pravidlo *insert_pravidlo(def_pravidlo *pom,def_pravidlo *zas_pravidiel)
 
 
 
-//vklada novy fakt pom  do zoznamu faktov, vola sa pri aplikuj a nacitani suboru
+//VKLADA FAKT DO ZASOBNIKA FAKTOV
 fakty *vloz_fakt(fakty *pom,fakty *zas_faktov)
 {
 	fakty *novy,*token;
