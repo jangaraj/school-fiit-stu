@@ -300,7 +300,7 @@ fakty *remove_fakt(fakty *mnozina,fakty *zas_faktov)
 	return(mnozina);
 }
 
-//ODTSRANI AKCIU AK BOLA NEPOTREBNA
+//ODSTRANI AKCIU AK BOLA NEPOTREBNA
 fakty *odstran(fakty *mnozina,fakty *token)
 {
 	fakty *pom;
@@ -344,7 +344,6 @@ def_pravidlo *kopiruj(def_pravidlo *pom)
 
 
 
-//ZOBERIE FAKT A PRAVIDLO A MNOZINU KDE BUDEM PRIDAVAT
 fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int start)
 {
 	def_pravidlo *pomocne,*zas_vymen=NULL;
@@ -393,7 +392,7 @@ fakty *expanduj(fakty *zas_faktov,def_pravidlo *pravidlo,fakty *mnozina,int star
 				}
 			}
 			else 
-			  if(pomocne->podmienka[x]=='<') {
+			  if(pomocne->podmienka[x]=='<') {		//SPECIAL PODMIENKA	
 				//POSUN ZNAKU
 				x+=3;
 				//NACITANIE MENA
@@ -442,8 +441,9 @@ int exchange(def_pravidlo *zas_vymen,def_pravidlo *pomocne,fakty *ftoken,int x,i
 {
 	
 	//do premenna ?X, do meno ide meno ktora sa ma nahrasit za ?X, slovo pomocna
-	char premenna[5],meno[15],slovo[15],kontrolny;
+	char premenna[5],meno[15],slovo[15],checkin;
 	int i,j,v_mena=0,v_premennej=0,v_slova=0;
+
 	meno[0]='\0';
 	//PREMENNA, KTORU IDEM NAHRADZOVAT
 	sscanf(zas_vymen->podmienka+x,"%s",premenna);
@@ -451,8 +451,7 @@ int exchange(def_pravidlo *zas_vymen,def_pravidlo *pomocne,fakty *ftoken,int x,i
 	if((ftoken->fakt[y]!='<')&&(ftoken->fakt[y]<='Z')) {	
 			sscanf(ftoken->fakt+y,"%s",meno);
 			v_mena=strlen(meno);
-			//y na fakt, y ma novu funkciu, bude tam pozicia zo zdrojoveho previdla
-			y=x; ///x je z cieloveho pravidla  y bude zo zdrojoveho pravidla
+			y=x;
 			//PREJDEM CEZ CELU PODMIENKU A UROBIM ZAMENU ZA PREMENNU MENOM
 			while(sscanf(zas_vymen->podmienka+x,"%s",slovo)!=0) {
 				v_slova=strlen(slovo);
@@ -473,8 +472,8 @@ int exchange(def_pravidlo *zas_vymen,def_pravidlo *pomocne,fakty *ftoken,int x,i
 					x+=(1+v_slova);
 					y+=(1+v_slova);
 				}
-				kontrolny=zas_vymen->podmienka[x-1];
-				if(kontrolny=='\0')break;
+				checkin=zas_vymen->podmienka[x-1];
+				if(checkin=='\0')break;
 			}
 			//SPRACOVANIE ACKIE
 			x=3; y=3;
@@ -494,8 +493,8 @@ int exchange(def_pravidlo *zas_vymen,def_pravidlo *pomocne,fakty *ftoken,int x,i
 					x+=(1+v_slova);
 					y+=(1+v_slova);
 				}
-				kontrolny=zas_vymen->akcia[x-1];
-				if(kontrolny==0) break;
+				checkin=zas_vymen->akcia[x-1];
+				if(checkin==0) break;
 			}
 		//0 AK NEDOSLO K NAHRADZANIU
 		}
