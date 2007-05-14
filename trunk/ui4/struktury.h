@@ -6,7 +6,7 @@ typedef struct fakty
 
 typedef struct def_pravidlo
 {
-	char meno[13];
+	char meno[20];
 	char podmienka[80];
 	char akcia[80];
 	def_pravidlo *next;

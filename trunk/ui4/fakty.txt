@@ -1,5 +1,4 @@
-( Peter je rodic Jano )
-( Eva je rodic Jano )
+( Peter je rodic Michal )
 ( Peter je rodic Vlado )
 ( manzelia Peter Eva )
 ( Vlado je rodic Maria )
