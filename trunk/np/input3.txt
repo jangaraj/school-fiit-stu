@@ -1,0 +1,6 @@
+BEGIN
+  READ(a, b);
+  IF TRUE OR NOT (TRUE) THEN
+    WRITE(a); ELSE
+    WRITE(b);;
+END 

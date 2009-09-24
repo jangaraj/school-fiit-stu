@@ -1,0 +1,6 @@
+BEGIN
+  READ(a, b, c, d);
+  e := a+b-c-d;
+  IF 1 THEN e := e + 20; ELSE e := e + 30;;
+  WRITE(e);
+END 
