@@ -1,0 +1,6 @@
+BEGIN
+  READ(a, b);
+  a := 1
+  IF TRUE THEN c:=20;;
+  WRITE(c);
+END 

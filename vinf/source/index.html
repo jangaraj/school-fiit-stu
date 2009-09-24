@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+
+<head>
+<link rel="stylesheet" type="text/css" href="include.css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Jan Garaj" />
+<meta name="URL" content="http://garaj.positive.sk" />
+
+<title>Distance search in ontology company of Slovakia</title>
+
+<style type="text/css">
+
+v\:* { behavior:url(#default#VML); }
+
+body { font-family: Verdana; }
+
+h3 { margin-left: 8px; }
+
+#map { height: 400px;
+	width: 550px;
+	border: 1px solid gray;
+	margin-top: 8px;
+	margin-left: 8px;
+}
+.button { display: block;
+	width: 180px;
+	border: 1px Solid #565;
+	background-color:#F5F5F5; 
+	padding: 3px;
+	text-decoration: none;
+	text-align:center;
+	font-size:smaller;
+}
+.button:hover {
+	background-color: white;
+}
+
+
+#descr { position:absolute;
+	top:44px;
+	left: 580px;
+	width: 250px;
+}
+
+</style>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAASA0VESvVqYYk8YwN404hLxRrKAgm3kMfkY6aOnFOnG6LN3uIRBQTzqBSOGBliWX0W9fWoCxIeA6JzQ" type="text/javascript"></script>
+
+</head>
+
+<body onload="loadMap()" onunload="GUnload()">
+
+<h3>Distance search in ontology company of Slovakia [ <a href="company_ontology.owl" target="blank">company_ontology.owl - 13MB</a> ]</h3>
+
+<div id="map"> </div>		
+
+<table id="descr" border="0" cellspacing="10" cellpadding="1">
+<tr><td>
+Click at two different places on the map to draw a rectangle.
+The boundary corners of the rectangle are draggable.
+</td></tr>
+<tr><td>
+Area of rectangle:
+</td></tr>
+
+<tr><td id="status">&nbsp; </td></tr>
+<tr><td style="height: 20px;">
+&nbsp;
+
+</td></tr><tr><td>
+<a href="#" class="button" onclick="zoomToPoly();return false;">Zoom To Rectangle</a>
+</td></tr><tr><td>
+<a href="#" class="button" onclick="clearPoly();return false;">Remove Rectangle</a>
+</td></tr><tr><td style="padding-top:19px; padding-right:19px; height:30px;">
+Click on the name of company int he result to focusing on the settlement of the company. Result list is alphabetic sorted and is limited to 1000 results.
+</td></tr>
+</table>
+<div style="clear:both; font-size:11px; margin-left: 8px;" id="results"></div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+ // Force SVG on also on Linux and BSD machines
+ if(navigator.platform.match(/linux|bsd/i)) {
+  _mSvgEnabled = _mSvgForced = true;
+ }
+
+// Global variables
+var map;
+var polyShape;
+var polyLineColor = "#3355ff";
+var polyFillColor = "#335599";
+var polyPoints = new Array();
+var markers = new Array();
+var report = document.getElementById("status");
+var searchTimeout = null;
+
+
+function loadMap() {
+
+ map = new GMap2(document.getElementById("map"), {draggableCursor:'auto', draggingCursor:'move'}); 
+ map.setCenter(new GLatLng(48.4, 19.6), 7);
+ map.addMapType(G_PHYSICAL_MAP);
+ var hierarchy = new GHierarchicalMapTypeControl();
+ hierarchy.addRelationship(G_SATELLITE_MAP, G_HYBRID_MAP, "Labels", true);
+ map.addControl(hierarchy);
+ map.addControl(new GLargeMapControl());
+ map.disableDoubleClickZoom();
+ GEvent.addListener(map, "click", leftClick);
+}
+
+
+function addIcon(icon) { // Add icon attributes
+
+ icon.iconSize = new GSize(11, 11);
+ icon.dragCrossSize = new GSize(0, 0);
+ icon.shadowSize = new GSize(11, 11);
+ icon.iconAnchor = new GPoint(5, 5);
+}
+
+
+function leftClick(overlay, point) {
+ clearTimeout( searchTimeout );
+
+ if(point) {
+
+  // Square marker icons
+  var square = new GIcon();
+  square.image = "square.png";
+  addIcon(square);
+
+  // Make markers draggable
+  var marker =new GMarker(point, {icon:square, draggable:true, bouncy:false, dragCrossMove:true});
+  if(markers.length>=2) {
+    map.removeOverlay(markers[1]);
+    markers.pop();
+  }
+  markers.push(marker);
+  map.addOverlay(marker);
+
+  GEvent.addListener(marker, "drag", function() {
+   drawPoly();
+  });
+
+  GEvent.addListener(marker, "mouseover", function() {
+    marker.setImage("m-over-square.png");
+  });
+
+  GEvent.addListener(marker, "mouseout", function() {
+   marker.setImage("square.png");
+  });
+
+  if(markers.length>=2) {
+    drawPoly();
+  }
+ }
+}
+
+
+function drawPoly() {
+
+ if(polyShape) map.removeOverlay(polyShape);
+ polyPoints.length = 0;	
+
+ //for(i = 0; i < markers.length; i++) {
+  polyPoints.push(markers[0].getLatLng());
+  polyPoints.push(new GLatLng(markers[0].getPoint().lat(),markers[1].getPoint().lng()));
+  polyPoints.push(markers[1].getLatLng());
+  polyPoints.push(new GLatLng(markers[1].getPoint().lat(),markers[0].getPoint().lng()));
+  polyPoints.push(markers[0].getLatLng());
+
+ polyShape = new GPolygon(polyPoints, polyLineColor, 2, .8, polyFillColor, .3);
+ 
+
+  report.innerHTML = (polyShape.getArea()/(1000*1000)).toFixed(3)+ " km&sup2;";
+
+ map.addOverlay(polyShape);
+ if(searchTimeout) clearTimeout( searchTimeout );
+ searchTimeout = setTimeout ( "search()", 1000 );
+}
+
+function zoomToPoly() {
+
+ if(polyShape && polyPoints.length > 0) {
+  var bounds = polyShape.getBounds();
+  map.setCenter(bounds.getCenter());
+  map.setZoom(map.getBoundsZoomLevel(bounds));
+ }
+}
+
+function clearPoly() {
+  document.getElementById('results').innerHTML = '';
+ // Remove polygon and reset arrays
+ map.clearOverlays();
+ polyPoints.length = 0;
+ markers.length = 0;
+ report.innerHTML = "&nbsp;";
+}
+
+
+    var xhr; 
+
+function search(){
+    try {  xhr = new ActiveXObject('Msxml2.XMLHTTP');   }
+    catch (e) 
+    {
+        try {   xhr = new ActiveXObject('Microsoft.XMLHTTP');    }
+        catch (e2) 
+        {
+          try {  xhr = new XMLHttpRequest();     }
+          catch (e3) {  xhr = false;   }
+        }
+     }
+     xhr.onreadystatechange  = function()
+    { 
+         if(xhr.readyState  == 4)
+         {
+              if(xhr.status  == 200) { 
+                drawResult(xhr.responseText);
+              } else { 
+                drawResult("Error code " + xhr.status);
+              }
+         }
+    };
+     
+   xhr.open('GET', "sesame.php?x1="+markers[0].getPoint().lat()+"&y1="+markers[0].getPoint().lng()+"&x2="+markers[1].getPoint().lat()+"&y2="+markers[1].getPoint().lng(),  true); 
+   xhr.send(null); 
+} 
+
+function drawResult(text) {
+  document.getElementById('results').innerHTML = text;
+}
+
+
+//]]>
+</script>   
+
+</body>
+</html>

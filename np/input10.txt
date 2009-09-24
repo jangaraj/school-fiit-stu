@@ -1,0 +1,3 @@
+BEGIN
+  WRITE(a,b)
+END
